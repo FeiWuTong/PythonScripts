@@ -1,0 +1,59 @@
+#!/usr/bin/perl -wl
+use strict;
+
+# parameters here
+my ($files, $lines, $characters) = (0, 0, 0);
+my $target_dir = 'Z:\lperl\Noob';
+my $target_ext = 'cif';
+my $require_ext = 1;
+
+# lcstatis return lines & characters statistic in named file
+sub lcstatis {
+	my $file = shift;
+	open(FILE, '<', $file) or die "Can't not read ${file}: $!";
+    $files++;
+    while(<FILE>) {
+        $lines++;
+        $characters += length($_);
+    }
+    close(FILE) or die "Can't close ${file}: $!";
+}
+
+# trdir will traverse the dir and statistic all files in it
+sub trdir {
+    $_ = shift;
+    1 if not $#_ + 1 or my $filt = pop;
+    my @dirs = ($_.'/');
+    my ($dir, $f);
+    while ($dir = pop @dirs) {
+        local *DH;
+        if (not opendir(DH, $dir)) {
+            warn "Cannot open dir--$dir: $!";
+            next;
+        }
+        foreach (readdir DH) {
+            next if ($_ eq '.' or $_ eq '..');
+            $f = $dir.$_;
+            if (not -l $f and -d _) {
+                $f .= '/';
+                push @dirs, $f;
+                next;
+            }
+            next if defined $filt and not $f =~ /\.$filt$/;
+            &lcstatis($f);
+        }
+        closedir(DH);
+    }
+}
+
+sub output {
+    print "Target directory: $target_dir";
+    print "Target file's extention: $target_ext" if $require_ext;
+    print "Files amount: $files";
+    print "Lines amount: $lines";
+    print "Characters amount: $characters";
+}
+
+#&trdir($target_dir); 
+&trdir($target_dir, $target_ext); 
+&output;

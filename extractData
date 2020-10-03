@@ -1,0 +1,15 @@
+#!/usr/bin/perl -wl
+use strict;
+
+# parameters here
+my $total = 0;
+my $target_file = 'getBlockLog1';
+my $target_separator = ' ';
+my $target_pos = 3;
+
+open(FILE, '<', $target_file) or die "Can't not read ${target_file}: $!";
+while (<FILE>) {
+	$total += (split /$target_separator/)[$target_pos];
+}
+close(FILE) or die "Can't close ${target_file}: $!";
+print "Total: $total";

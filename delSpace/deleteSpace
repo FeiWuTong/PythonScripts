@@ -1,0 +1,7 @@
+#! /usr/bin/perl
+
+$^I = "~";
+while (<>) {
+    s/\s+//g;
+    print;
+}
